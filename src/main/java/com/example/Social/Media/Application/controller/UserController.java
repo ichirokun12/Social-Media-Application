@@ -17,13 +17,13 @@ public class UserController {
     @Autowired
     private UserServices userServices;
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<?> getUser(@PathVariable Long userId) {
        List<User> userList = userServices.getUser(userId);
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createNewUser(@RequestBody User user) {
         try {
             User newUser = userServices.createUser(

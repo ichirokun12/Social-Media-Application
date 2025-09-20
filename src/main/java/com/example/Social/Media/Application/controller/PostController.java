@@ -1,6 +1,7 @@
 package com.example.Social.Media.Application.controller;
 
 import com.example.Social.Media.Application.entity.Post;
+import com.example.Social.Media.Application.entity.User;
 import com.example.Social.Media.Application.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,37 +21,44 @@ public class PostController {
     @GetMapping("/getPostById/{postId}")
     public ResponseEntity<?> getPost(@PathVariable Long postId) {
         try {
-            List<Post> postList = postService.getPost(postId);
+            Post postList = postService.getPostById(postId);
             return new ResponseEntity<>(postList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("post does not exist" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> createPost(@RequestBody Post post) {
+    @PostMapping("/addPost/{userId}")
+    public ResponseEntity<String> createPost(@RequestBody Post post,@PathVariable Long userId ) {
         try {
+
             Post newPost = postService.createPost(
                     post.getOpinion(),
                     post.getFact(),
                     post.getImage(),
-                    post.getPing()
+                    post.getPing(),
+                    userId
             );
-            return new ResponseEntity<>("post is created ", HttpStatus.CREATED);
-        } catch (Exception e) {
+            return new ResponseEntity<>("post is created " + newPost.getPostId(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("Failed to create post: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }  catch (Exception e) {
             return new ResponseEntity<>("post is not created", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @DeleteMapping("/deletePost/{postId}")
     public ResponseEntity<?> deletePostById(@PathVariable Long postId) {
         try {
-            List<Post> deletePost = postService.getPost(postId);
+            List<Post> deletePost = postService.getPostByIdAsList(postId);
             postService.deletePost(postId);
             return new ResponseEntity<>("post has been deleted", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("Post does not exist: " + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>("post does not exist",HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Internal server error",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }

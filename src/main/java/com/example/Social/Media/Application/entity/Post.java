@@ -1,7 +1,9 @@
 package com.example.Social.Media.Application.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.annotations.OptimisticLock;
 
 @Entity
@@ -12,6 +14,7 @@ import org.hibernate.annotations.OptimisticLock;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Jacksonized
 public class Post {
     @Id
     @Column(name = "postId")
@@ -29,5 +32,10 @@ public class Post {
 
     @Column(name = "ping", nullable = true)
     private String ping;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User assignedUser;
 
 }

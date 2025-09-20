@@ -24,6 +24,7 @@ public class UserServices {
             String email,
             String firstName,
             String lastName
+
     )
 
     {
@@ -66,4 +67,8 @@ public class UserServices {
 //    public Optional<User> existByUsername(String username) {
 //        return userRepository.existByUsername(username);
 //    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 }
