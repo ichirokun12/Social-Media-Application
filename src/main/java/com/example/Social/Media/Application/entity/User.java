@@ -7,9 +7,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -21,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Jacksonized
-public class User {
+public class User  {
 
     //    user id
     @Id
@@ -66,6 +69,14 @@ public class User {
     @JsonIgnore
     @Builder.Default
     private List<UserFollower> followingRelation = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<String> roles = new HashSet<>();
+
+    public Set<String> getRoles() {
+        return roles;
+    }
 
     public void addFollowing(User userToFollow) {
         UserFollower follow = new UserFollower();
