@@ -1,6 +1,9 @@
 package com.example.Social.Media.Application.controller;
 
+import com.example.Social.Media.Application.DTO.login.RequestDTO;
+import com.example.Social.Media.Application.DTO.login.ResponseDto;
 import com.example.Social.Media.Application.entity.User;
+import com.example.Social.Media.Application.services.AuthService;
 import com.example.Social.Media.Application.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,9 @@ public class AuthController {
 
     @Autowired
     private UserServices userServices;
+
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody User user) {
@@ -30,8 +36,8 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping("/login")
+    public ResponseEntity<ResponseDto> login(@RequestBody RequestDTO requestDTO) {
+        return new ResponseEntity<>(authService.login(requestDTO), HttpStatus.OK);
     }
 }
