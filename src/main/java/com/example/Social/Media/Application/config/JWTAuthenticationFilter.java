@@ -43,7 +43,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
-        if (authHeader == null && authHeader.startsWith("Bearer")) {
+        if (authHeader != null && authHeader.startsWith("Bearer")) {
             token = authHeader.substring(7);
             try {
                 Claims claims = Jwts.parser()
@@ -57,7 +57,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 logger.error("JWT token validation failed: " + e.getMessage());
             }
         }
-        if(username == null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailService.loadUserByUsername(username);
 
             if(isTokenValid(token)) {
