@@ -59,6 +59,4 @@ public class PostController {
             return new ResponseEntity<>("Internal server error",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }

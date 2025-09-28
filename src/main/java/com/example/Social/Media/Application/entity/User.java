@@ -55,8 +55,8 @@ public class User  {
     private Long followers = 0L;
     private Long following = 0L;
 
-    @OneToMany(mappedBy = "assignedUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "assignedUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonManagedReference
     @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
