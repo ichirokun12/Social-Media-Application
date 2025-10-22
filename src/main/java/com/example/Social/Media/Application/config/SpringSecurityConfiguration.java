@@ -38,6 +38,7 @@ public class SpringSecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/**", "/auth/**", "/health/**").permitAll()
+                        .requestMatchers("/admin/allUsers/**").hasRole("ADMIN")
                         .requestMatchers("/post/**", "/follow/**", "/comment/**").hasAnyAuthority("USER")
                         .anyRequest().authenticated()
                 )
