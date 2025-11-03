@@ -7,6 +7,8 @@ import com.example.Social.Media.Application.repository.CommentsRepository;
 import com.example.Social.Media.Application.repository.PostRepository;
 import com.example.Social.Media.Application.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +22,9 @@ public class CommentsService {
 
     @Autowired
     private CommentsRepository commentsRepository;
+
+    @Autowired
+    private UserServices userServices;
 
     public Comments addComment(Long userId, Long postId, String comment) {
         if(!postRepository.existsByPostId(postId)) {
@@ -41,4 +46,24 @@ public class CommentsService {
         comments.setAssignPost(post);
         return commentsRepository.save(comments);
     }
+
+    public void deleteComment(Long commentId) {
+
+        Comments comment = commentsRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found with ID: " + commentId));
+
+        Post post = comment.getAssignPost();
+
+        if (post == null || !postRepository.existsById(post.getPostId())) {
+            throw new RuntimeException("Post not found for this comment");
+        }
+
+        // Remove comment from post's comment list
+        post.getComments().remove(comment);
+        postRepository.save(post);
+
+        // Now delete the comment
+        commentsRepository.delete(comment);
+    }
+
 }

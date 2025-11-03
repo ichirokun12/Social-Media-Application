@@ -2,35 +2,52 @@ package com.example.Social.Media.Application.controller;
 
 import com.example.Social.Media.Application.entity.User;
 import com.example.Social.Media.Application.services.UserFollowerServices;
+import com.example.Social.Media.Application.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
-@RequestMapping("/follow")
+@RequestMapping("/followUser")
 @RestController
 public class FollowController {
 
     @Autowired
+    private UserServices userServices;
+
+    @Autowired
     private UserFollowerServices userFollowerServices;
 
-    @PostMapping("/{followerId}/follow/{followingId}")
-    public ResponseEntity<?> followUser(@PathVariable Long followerId, @PathVariable Long followingId) {
+    @PostMapping("/follow/{followingId}")
+    public ResponseEntity<?> followUser( @PathVariable Long followingId) {
         try {
-            String result = userFollowerServices.followUser(followerId, followingId);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            User user = userServices.findByUserName(userName)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+            String result = userFollowerServices.followUser(user.getUserId(), followingId);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("server is down " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("{followerId}/unfollow/{followingId}")
-    public ResponseEntity<?> unfollowUser(@PathVariable Long followerId,@PathVariable Long followingId) {
+    @DeleteMapping("/unfollow/{followingId}")
+    public ResponseEntity<?> unfollowUser(@PathVariable Long followingId) {
         try {
-            String result = userFollowerServices.unfollowUser(followerId, followingId);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            User user = userServices.findByUserName(userName)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+            String result = userFollowerServices.unfollowUser(user.getUserId(), followingId);
             return new ResponseEntity<>(result,HttpStatus.OK);
         }
         catch (Exception e) {
@@ -57,6 +74,4 @@ public class FollowController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }

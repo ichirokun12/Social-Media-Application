@@ -5,6 +5,8 @@ import com.example.Social.Media.Application.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,11 +41,15 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long userId) {
+    @DeleteMapping("/deleteUser")
+    public ResponseEntity<?> deleteUserById() {
         try {
-            List<User> deleteUser = userServices.getUser(userId);
-            userServices.deleteUser(userId);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            User user = userServices.findByUserName(userName)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+            userServices.deleteUser(user.getUserId());
             return new ResponseEntity<>("user deleted",HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("user does not exists",HttpStatus.INTERNAL_SERVER_ERROR);

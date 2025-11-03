@@ -73,6 +73,10 @@ public class UserServices {
 //        return userRepository.existByUsername(username);
 //    }
 
+    public Optional<User> findByUserName(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public User saveUser(User user) {
         return userRepository.save(user);
     }

@@ -3,9 +3,13 @@ package com.example.Social.Media.Application.controller;
 import com.example.Social.Media.Application.entity.Post;
 import com.example.Social.Media.Application.entity.User;
 import com.example.Social.Media.Application.services.PostService;
+import com.example.Social.Media.Application.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,6 +22,9 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private UserServices userServices;
+
     @GetMapping("/getPostById/{postId}")
     public ResponseEntity<?> getPost(@PathVariable Long postId) {
         try {
@@ -28,16 +35,21 @@ public class PostController {
         }
     }
 
-    @PostMapping("/addPost/{userId}")
-    public ResponseEntity<String> createPost(@RequestBody Post post,@PathVariable Long userId ) {
+    @PostMapping("/addPost")
+    public ResponseEntity<String> createPost(@RequestBody Post post ) {
         try {
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            User user = userServices.findByUserName(userName)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
 
             Post newPost = postService.createPost(
                     post.getOpinion(),
                     post.getFact(),
                     post.getImage(),
                     post.getPing(),
-                    userId
+                    user.getUserId()
             );
             return new ResponseEntity<>("post is created " + newPost.getPostId(), HttpStatus.CREATED);
         } catch (RuntimeException e) {
@@ -50,8 +62,19 @@ public class PostController {
     @DeleteMapping("/deletePost/{postId}")
     public ResponseEntity<?> deletePostById(@PathVariable Long postId) {
         try {
-            List<Post> deletePost = postService.getPostByIdAsList(postId);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            User user = userServices.findByUserName(userName)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+            Post post = postService.getPostById(postId);
+
+            if (!post.getAssignedUser().getUserId().equals(user.getUserId())) {
+                return new ResponseEntity<>("You are not authorized to delete this post", HttpStatus.FORBIDDEN);
+            }
+
             postService.deletePost(postId);
+
             return new ResponseEntity<>("post has been deleted", HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>("Post does not exist: " + e.getMessage(), HttpStatus.NOT_FOUND);
