@@ -48,4 +48,9 @@ public class Post {
     @Builder.Default
     private List<Comments> comments = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id")
+    private Clubs club;
+
+
 }

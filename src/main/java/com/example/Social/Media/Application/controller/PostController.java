@@ -82,4 +82,15 @@ public class PostController {
             return new ResponseEntity<>("Internal server error",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllPosts() {
+        try {
+            List<Post> allPosts = postService.getAllPosts();
+            return new ResponseEntity<>(allPosts, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to fetch posts: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

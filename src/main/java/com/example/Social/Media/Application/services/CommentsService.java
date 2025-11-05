@@ -65,5 +65,4 @@ public class CommentsService {
         // Now delete the comment
         commentsRepository.delete(comment);
     }
-
 }

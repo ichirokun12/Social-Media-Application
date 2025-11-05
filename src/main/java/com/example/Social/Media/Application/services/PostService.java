@@ -42,6 +42,10 @@ public class PostService {
        return postRepository.save(newPost);
     }
 
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
+    }
+
     public Post getPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found with ID: " + postId));

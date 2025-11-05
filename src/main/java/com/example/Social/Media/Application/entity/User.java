@@ -74,6 +74,20 @@ public class User  {
     @Enumerated(EnumType.STRING)
     private Set<String> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Clubs> ownedClubs = new HashSet<>();
+
+
+    @ManyToMany(mappedBy = "members")
+    @JsonIgnore
+    private Set<Clubs> joinedClubs = new HashSet<>();
+
+    @ManyToMany(mappedBy = "admins")
+    @JsonIgnore
+    private Set<Clubs> adminClubs = new HashSet<>();
+
+
     public Set<String> getRoles() {
         return roles;
     }
@@ -99,6 +113,16 @@ public class User  {
         this.following = (long) followingRelation.size();
         userToUnfollow.followers = (long) userToUnfollow.followerRelation.size();
     }
+
+//    public void joinClub(Club club) {
+//        this.joinedClubs.add(club);
+//        club.getMembers().add(this);
+//    }
+//
+//    public void leaveClub(Club club) {
+//        this.joinedClubs.remove(club);
+//        club.getMembers().remove(this);
+//    }
 
 
 }
