@@ -1,5 +1,6 @@
 package com.example.Social.Media.Application.controller;
 
+import com.example.Social.Media.Application.DTO.PostDTO;
 import com.example.Social.Media.Application.entity.Post;
 import com.example.Social.Media.Application.entity.User;
 import com.example.Social.Media.Application.services.PostService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/post")
 @RestController
@@ -82,12 +84,15 @@ public class PostController {
             return new ResponseEntity<>("Internal server error",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     @GetMapping("/all")
     public ResponseEntity<?> getAllPosts() {
         try {
             List<Post> allPosts = postService.getAllPosts();
-            return new ResponseEntity<>(allPosts, HttpStatus.OK);
+            // Convert to DTOs to ensure username is included
+            List<PostDTO> postDTOs = allPosts.stream()
+                    .map(PostDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(postDTOs, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to fetch posts: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);

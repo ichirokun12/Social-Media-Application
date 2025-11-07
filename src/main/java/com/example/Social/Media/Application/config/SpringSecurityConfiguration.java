@@ -39,7 +39,7 @@ public class SpringSecurityConfiguration {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/**", "/auth/**", "/health/**").permitAll()
                         .requestMatchers("/admin/allUsers/**").hasRole("ADMIN")
-                        .requestMatchers("/post/**", "/follow/**", "/comment/**").hasAnyAuthority("USER")
+                        .requestMatchers("/post/**", "/follow/**", "/comment/**, /clubs/**").hasAnyAuthority("USER")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
