@@ -41,9 +41,12 @@ public class CommentsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("user not found"));
 
-        Comments comments = new Comments();
-        comments.setComment(comment);
-        comments.setAssignPost(post);
+        Comments comments = Comments.builder()
+                .comment(comment)
+                .assignPost(post)
+                .author(user.getUsername())
+                .build();
+
         return commentsRepository.save(comments);
     }
 
