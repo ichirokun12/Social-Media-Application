@@ -45,4 +45,6 @@ public class ClubService {
             throw new RuntimeException("error " + e.getMessage());
         }
     }
+
+//    join club
 }

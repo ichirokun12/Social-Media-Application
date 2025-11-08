@@ -98,4 +98,28 @@ public class PostController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("editPost/{postId}")
+    private ResponseEntity<?> editPost(@PathVariable Long postId,  @RequestBody Post updatedPost) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            User user = userServices.findByUserName(userName)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+            Post editedPost = postService.editPost(
+                    user.getUserId(),
+                    postId,
+                    updatedPost.getOpinion(),
+                    updatedPost.getFact(),
+                    updatedPost.getImage(),
+                    updatedPost.getPing()
+            );
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
