@@ -109,4 +109,26 @@ public class PostService {
 
         return postRepository.save(post);
     }
+
+    public void likePost(Long userId, Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post does not exist"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (post.getLikedUsers().contains(user)) {
+            post.getLikedUsers().remove(user);
+            if (post.getLikesCount() > 0) {
+                post.setLikesCount(post.getLikesCount() - 1);
+
+            }
+        } else {
+            post.getLikedUsers().add(user);
+            post.setLikesCount(post.getLikesCount() + 1);
+        }
+
+        postRepository.save(post);
+    }
 }

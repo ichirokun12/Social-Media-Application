@@ -42,7 +42,7 @@ public class PostDTO {
         private String author;
     }
 
-    // Converter method
+    // Converter method - FIXED
     public static PostDTO fromEntity(Post post) {
         return PostDTO.builder()
                 .postId(post.getPostId())
@@ -59,7 +59,7 @@ public class PostDTO {
                         .map(comment -> CommentInfo.builder()
                                 .commentId(comment.getCommentId())
                                 .comment(comment.getComment())
-                                .author("User") // You can enhance this
+                                .author(comment.getAuthor() != null ? comment.getAuthor() : "Anonymous")
                                 .build())
                         .collect(Collectors.toList()))
                 .build();

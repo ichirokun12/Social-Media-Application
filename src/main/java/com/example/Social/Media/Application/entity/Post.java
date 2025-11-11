@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
-import org.hibernate.annotations.OptimisticLock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,21 @@ public class Post {
     @Column(name = "ping", nullable = true)
     private String ping;
 
+    @Column(name = "likes_Count", nullable = false)
+    private Long likesCount;
+
+//    @Column(name = "like_Status")
+//    private boolean like;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "post_likes",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonIgnore
+    private List<User> likedUsers = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
@@ -51,6 +65,5 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
     private Clubs club;
-
 
 }

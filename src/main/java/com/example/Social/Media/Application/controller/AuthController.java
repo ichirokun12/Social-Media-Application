@@ -38,6 +38,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto> login(@RequestBody RequestDTO requestDTO) {
-        return new ResponseEntity<>(authService.login(requestDTO), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(authService.login(requestDTO), HttpStatus.OK);
+
+        } catch (RuntimeException e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(authService.login(requestDTO), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(authService.login(requestDTO), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
