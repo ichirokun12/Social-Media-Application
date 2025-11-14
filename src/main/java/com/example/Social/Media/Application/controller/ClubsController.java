@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/clubs")
@@ -60,6 +61,27 @@ public class ClubsController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/joinClub/{clubId}")
+    public ResponseEntity<?> joinClubs(@PathVariable Long clubId,  @RequestBody Map<String, String> request) {
+        try {
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userName = authentication.getName();
+            User user = userServices.findByUserName(userName)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+            String clubCode = request.get("clubCode");
+
+            clubService.joinClubRequest(user.getUserId(), clubId, clubCode);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -67,12 +67,12 @@ public class ClubService {
                 .orElseThrow(() -> new RuntimeException("club odes not exists with this username "));
 
         if (club.getMembers().contains(user)) {
-            throw new RuntimeException("user already in the club ")
+            throw new RuntimeException("user already in the club ");
         }
 
         if (club.isPrivate()) {
             if (enteredClubCode == null || !enteredClubCode.equals(club.getClubCode())) {
-                throw new RuntimeException("invalid club code access details ")
+                throw new RuntimeException("invalid club code access details ");
             }
         }
 
